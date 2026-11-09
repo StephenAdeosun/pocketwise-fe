@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerAccount } from "@/services/auth-service";
+import { PasswordField } from "@/components/password-field";
+import { validatePassword } from "@/lib/validation";
 import styles from "../auth.module.css";
 
 export default function RegisterPage() {
@@ -18,8 +20,13 @@ export default function RegisterPage() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (form.full_name.trim().split(/\s+/).length < 2) {
+      setError("Enter your first and last name.");
+      return;
+    }
+    const passwordErrors = validatePassword(form.password);
+    if (passwordErrors.length > 0) {
+      setError(passwordErrors.join(" "));
       return;
     }
     if (form.password !== form.confirmation) {
@@ -81,30 +88,26 @@ export default function RegisterPage() {
               required
             />
           </label>
-          <label>
-            Password
-            <input
-              type="password"
-              minLength={6}
-              value={form.password}
-              onChange={(event) =>
-                setForm({ ...form, password: event.target.value })
-              }
-              required
-            />
-          </label>
-          <label>
-            Confirm password
-            <input
-              type="password"
-              minLength={6}
-              value={form.confirmation}
-              onChange={(event) =>
-                setForm({ ...form, confirmation: event.target.value })
-              }
-              required
-            />
-          </label>
+          <PasswordField
+            id="register-password"
+            label="Password"
+            value={form.password}
+            onChange={(password) => setForm({ ...form, password })}
+            minLength={8}
+            autoComplete="new-password"
+          />
+          <p className={styles.passwordHint}>
+            Use 8+ characters with uppercase, lowercase, a number, and a
+            special character.
+          </p>
+          <PasswordField
+            id="register-confirmation"
+            label="Confirm password"
+            value={form.confirmation}
+            onChange={(confirmation) => setForm({ ...form, confirmation })}
+            minLength={8}
+            autoComplete="new-password"
+          />
           <button className={styles.submitButton} type="submit">
             Create account
           </button>

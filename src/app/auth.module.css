@@ -74,6 +74,35 @@
   border-color: #6a9c5e;
   box-shadow: 0 0 0 3px rgba(106, 156, 94, 0.12);
 }
+.passwordInput {
+  position: relative;
+  display: block;
+}
+.passwordInput input {
+  width: 100%;
+  padding-right: 42px;
+}
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #60766a;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 17px;
+  line-height: 1;
+}
+.passwordToggle:hover {
+  color: #28553f;
+}
+.passwordHint {
+  margin-top: -8px;
+  color: #7a897f;
+  font: 11px/1.45 Arial, sans-serif;
+}
 .authForm input:-webkit-autofill {
   -webkit-text-fill-color: #213b2d;
   -webkit-box-shadow: 0 0 0 1000px #fff inset;

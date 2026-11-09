@@ -632,6 +632,25 @@
   box-shadow: 0 24px 70px rgba(23, 60, 50, 0.2);
   padding: 25px;
 }
+.confirmModal {
+  max-width: 430px;
+}
+.confirmMessage {
+  color: #66776d;
+  font: 13px/1.5 Arial, sans-serif;
+}
+.dangerButton {
+  border: 1px solid #b65f4c;
+  border-radius: 6px;
+  background: #b65f4c;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px 14px;
+  font: 12px Arial, sans-serif;
+}
+.dangerButton:hover {
+  background: #994d3d;
+}
 .modalHeader {
   display: flex;
   justify-content: space-between;

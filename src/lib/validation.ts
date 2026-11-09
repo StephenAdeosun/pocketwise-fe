@@ -3,6 +3,21 @@ import type { BudgetInput, TransactionInput } from "@/types/finance";
 const amountPattern = /^\d+(\.\d{1,2})?$/;
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const monthPattern = /^\d{4}-\d{2}$/;
+const strongPasswordPattern =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+export function validatePassword(password: string): string[] {
+  const errors: string[] = [];
+
+  if (password.length < 8) {
+    errors.push("Password must be at least 8 characters.");
+  }
+  if (!strongPasswordPattern.test(password)) {
+    errors.push("Use uppercase, lowercase, a number, and a special character.");
+  }
+
+  return errors;
+}
 
 export function validateTransaction(input: TransactionInput): string[] {
   const errors: string[] = [];

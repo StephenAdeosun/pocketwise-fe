@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { TransactionForm } from "@/components/transactions/transaction-form";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import {
   formatDate,
   formatNaira,
@@ -13,6 +15,7 @@ import {
 import { useFinanceStore } from "@/hooks/use-finance-store";
 import { logoutAccount } from "@/services/auth-service";
 import { getCurrentUser, hasAccessToken } from "@/services/api-client";
+import { getUserInitials } from "@/lib/user";
 import type {
   Budget,
   BudgetInput,
@@ -51,6 +54,11 @@ function DashboardContent() {
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<
+    | { type: "transaction"; item: Transaction }
+    | { type: "budget"; item: Budget }
+    | null
+  >(null);
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<
     "all" | TransactionType
   >("all");
@@ -108,9 +116,7 @@ function DashboardContent() {
   }
 
   function handleDeleteTransaction(transaction: Transaction) {
-    if (window.confirm(`Delete "${transaction.description}"?`)) {
-      deleteTransaction(transaction.id);
-    }
+    setDeleteTarget({ type: "transaction", item: transaction });
   }
 
   async function handleBudgetSubmit(input: BudgetInput) {
@@ -124,9 +130,7 @@ function DashboardContent() {
   }
 
   function handleDeleteBudget(budget: Budget) {
-    if (window.confirm("Delete this budget?")) {
-      deleteBudget(budget.id);
-    }
+    setDeleteTarget({ type: "budget", item: budget });
   }
 
   return (
@@ -137,22 +141,22 @@ function DashboardContent() {
           <span>pocketwise</span>
         </div>
         <div className={styles.profile}>
-          <div className={styles.avatar}>KA</div>
+          <div className={styles.avatar}>{getUserInitials(user.full_name)}</div>
           <div>
             <strong>{user.full_name}</strong>
             <span>Student account</span>
           </div>
         </div>
         <nav className={styles.nav} aria-label="Main navigation">
-          <a className={styles.activeNav} href="#dashboard">
+          <Link className={styles.activeNav} href="/dashboard">
             <span>▦</span>Dashboard
-          </a>
-          <a href="/transactions">
+          </Link>
+          <Link href="/transactions">
             <span>↕</span>Transactions
-          </a>
-          <a href="/budgets">
+          </Link>
+          <Link href="/budgets">
             <span>◫</span>Budgets
-          </a>
+          </Link>
         </nav>
         <div className={styles.sidebarBottom}>
           <div className={styles.tip}>
@@ -469,6 +473,25 @@ function DashboardContent() {
           onClose={() => {
             setEditingBudget(null);
             setBudgetFormOpen(false);
+          }}
+        />
+      )}
+      {deleteTarget && (
+        <ConfirmDialog
+          title={`Delete ${deleteTarget.type}?`}
+          message={
+            deleteTarget.type === "transaction"
+              ? `Are you sure you want to delete "${deleteTarget.item.description}"? This action cannot be undone.`
+              : "Are you sure you want to delete this budget? This action cannot be undone."
+          }
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={() => {
+            if (deleteTarget.type === "transaction") {
+              deleteTransaction(deleteTarget.item.id);
+            } else {
+              deleteBudget(deleteTarget.item.id);
+            }
+            setDeleteTarget(null);
           }}
         />
       )}

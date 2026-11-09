@@ -3,8 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BudgetForm } from "@/components/budgets/budget-form";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFinanceStore } from "@/hooks/use-finance-store";
 import { formatNaira } from "@/lib/calculations";
+import { getUserInitials } from "@/lib/user";
+import { logoutAccount } from "@/services/auth-service";
 import type { Budget, BudgetInput } from "@/types/finance";
 import styles from "../dashboard/page.module.css";
 
@@ -14,6 +17,7 @@ const budgetColors = ["mint", "blue", "coral"] as const;
 export default function BudgetsPage() {
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+  const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null);
   const {
     user,
     categories,
@@ -32,7 +36,7 @@ export default function BudgetsPage() {
   }
 
   function handleDelete(budget: Budget) {
-    if (window.confirm("Delete this budget?")) deleteBudget(budget.id);
+    setBudgetToDelete(budget);
   }
 
   return (
@@ -43,14 +47,14 @@ export default function BudgetsPage() {
           <span>pocketwise</span>
         </div>
         <div className={styles.profile}>
-          <div className={styles.avatar}>KA</div>
+          <div className={styles.avatar}>{getUserInitials(user.full_name)}</div>
           <div>
             <strong>{user.full_name}</strong>
             <span>Student account</span>
           </div>
         </div>
         <nav className={styles.nav} aria-label="Main navigation">
-          <Link href="/">
+          <Link href="/dashboard">
             <span>▦</span>Dashboard
           </Link>
           <Link href="/transactions">
@@ -60,6 +64,16 @@ export default function BudgetsPage() {
             <span>◫</span>Budgets
           </Link>
         </nav>
+        <div className={styles.sidebarBottom}>
+          <div className={styles.tip}>
+            <span>✦</span>
+            <strong>Small steps add up.</strong>
+            <p>Keeping track today makes tomorrow easier.</p>
+          </div>
+          <Link className={styles.logout} href="/login" onClick={logoutAccount}>
+            ↪ <span>Log out</span>
+          </Link>
+        </div>
       </aside>
       <main className={styles.content}>
         <header className={styles.header}>
@@ -158,6 +172,17 @@ export default function BudgetsPage() {
           onClose={() => {
             setEditingBudget(null);
             setFormOpen(false);
+          }}
+        />
+      )}
+      {budgetToDelete && (
+        <ConfirmDialog
+          title="Delete budget?"
+          message="Are you sure you want to delete this budget? This action cannot be undone."
+          onClose={() => setBudgetToDelete(null)}
+          onConfirm={() => {
+            deleteBudget(budgetToDelete.id);
+            setBudgetToDelete(null);
           }}
         />
       )}

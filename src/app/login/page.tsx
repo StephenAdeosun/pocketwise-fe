@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAccount } from "@/services/auth-service";
+import { PasswordField } from "@/components/password-field";
 import styles from "../auth.module.css";
 
 export default function LoginPage() {
@@ -48,15 +49,13 @@ export default function LoginPage() {
               required
             />
           </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </label>
+          <PasswordField
+            id="login-password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+          />
           <button className={styles.submitButton} type="submit">
             Log in
           </button>

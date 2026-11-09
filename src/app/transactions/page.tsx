@@ -3,8 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { TransactionForm } from "@/components/transactions/transaction-form";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFinanceStore } from "@/hooks/use-finance-store";
 import { formatDate, formatNaira } from "@/lib/calculations";
+import { getUserInitials } from "@/lib/user";
+import { logoutAccount } from "@/services/auth-service";
 import type {
   Transaction,
   TransactionInput,
@@ -17,6 +20,8 @@ const selectedMonth = "2026-11";
 export default function TransactionsPage() {
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
+    useState<Transaction | null>(null);
+  const [transactionToDelete, setTransactionToDelete] =
     useState<Transaction | null>(null);
   const [typeFilter, setTypeFilter] = useState<"all" | TransactionType>("all");
   const [categoryFilter, setCategoryFilter] = useState(0);
@@ -50,8 +55,7 @@ export default function TransactionsPage() {
   }
 
   function handleDelete(transaction: Transaction) {
-    if (window.confirm(`Delete "${transaction.description}"?`))
-      deleteTransaction(transaction.id);
+    setTransactionToDelete(transaction);
   }
 
   return (
@@ -62,14 +66,14 @@ export default function TransactionsPage() {
           <span>pocketwise</span>
         </div>
         <div className={styles.profile}>
-          <div className={styles.avatar}>KA</div>
+          <div className={styles.avatar}>{getUserInitials(user.full_name)}</div>
           <div>
             <strong>{user.full_name}</strong>
             <span>Student account</span>
           </div>
         </div>
         <nav className={styles.nav} aria-label="Main navigation">
-          <Link href="/">
+          <Link href="/dashboard">
             <span>▦</span>Dashboard
           </Link>
           <Link className={styles.activeNav} href="/transactions">
@@ -79,6 +83,16 @@ export default function TransactionsPage() {
             <span>◫</span>Budgets
           </Link>
         </nav>
+        <div className={styles.sidebarBottom}>
+          <div className={styles.tip}>
+            <span>✦</span>
+            <strong>Small steps add up.</strong>
+            <p>Keeping track today makes tomorrow easier.</p>
+          </div>
+          <Link className={styles.logout} href="/login" onClick={logoutAccount}>
+            ↪ <span>Log out</span>
+          </Link>
+        </div>
       </aside>
       <main className={styles.content}>
         <header className={styles.header}>
@@ -203,6 +217,17 @@ export default function TransactionsPage() {
           onClose={() => {
             setEditingTransaction(null);
             setFormOpen(false);
+          }}
+        />
+      )}
+      {transactionToDelete && (
+        <ConfirmDialog
+          title="Delete transaction?"
+          message={`Are you sure you want to delete "${transactionToDelete.description}"? This action cannot be undone.`}
+          onClose={() => setTransactionToDelete(null)}
+          onConfirm={() => {
+            deleteTransaction(transactionToDelete.id);
+            setTransactionToDelete(null);
           }}
         />
       )}
