@@ -6,7 +6,7 @@ import { BudgetForm } from "@/components/budgets/budget-form";
 import { useFinanceStore } from "@/hooks/use-finance-store";
 import { formatNaira } from "@/lib/calculations";
 import type { Budget, BudgetInput } from "@/types/finance";
-import styles from "../page.module.css";
+import styles from "../dashboard/page.module.css";
 
 const selectedMonth = "2026-11";
 const budgetColors = ["mint", "blue", "coral"] as const;

@@ -10,7 +10,7 @@ import type {
   TransactionInput,
   TransactionType,
 } from "@/types/finance";
-import styles from "../page.module.css";
+import styles from "../dashboard/page.module.css";
 
 const selectedMonth = "2026-11";
 

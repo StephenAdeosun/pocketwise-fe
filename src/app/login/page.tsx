@@ -16,7 +16,7 @@ export default function LoginPage() {
     event.preventDefault();
     try {
       await loginAccount(email, password);
-      router.push("/");
+      router.push("/dashboard");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to log in.");
     }
@@ -62,7 +62,7 @@ export default function LoginPage() {
           </button>
         </form>
         <p className={styles.switchText}>
-          New to pocketwise? <Link href="/register">Create an account</Link>
+          New to pocketwise? <Link href="/auth/signup">Create an account</Link>
         </p>
       </section>
     </main>

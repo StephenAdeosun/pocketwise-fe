@@ -364,23 +364,29 @@
 }
 .transactionActions {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   margin-left: 4px;
 }
 .transactionActions button {
-  border: 0;
-  background: none;
-  color: #718078;
+  border: 1px solid #dfe9df;
+  border-radius: 5px;
+  background: #f9fcf9;
+  color: #567262;
   cursor: pointer;
-  padding: 3px;
+  padding: 6px 9px;
   font:
-    10px Arial,
+    600 10px Arial,
     sans-serif;
+  transition: background .2s, border-color .2s, color .2s;
 }
 .transactionActions button:hover {
+  border-color: #9cbd9b;
+  background: #eaf5e7;
   color: #28553f;
 }
 .transactionActions button:last-child:hover {
+  border-color: #e5b7aa;
+  background: #fff3ef;
   color: #b65f4c;
 }
 .transactionIcon {
@@ -479,35 +485,47 @@
 .outlineButton {
   width: 100%;
   margin-top: 28px;
-  border: 1px dashed #b9c9b9;
-  border-radius: 7px;
-  padding: 11px;
-  background: #fbfdfb;
-  color: #4c8554;
+  border: 1px solid #b9cdb9;
+  border-radius: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff, #f3f9f2);
+  color: #28553f;
   cursor: pointer;
   font:
-    12px Arial,
+    700 12px Arial,
     sans-serif;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.outlineButton:hover {
+  border-color: #7ca878;
+  box-shadow: 0 7px 16px rgba(40, 85, 63, .1);
+  transform: translateY(-1px);
 }
 .budgetActions {
   display: flex;
   gap: 7px;
 }
 .budgetActions button {
-  border: 0;
-  background: none;
-  color: #718078;
+  border: 1px solid #dfe9df;
+  border-radius: 5px;
+  background: #f9fcf9;
+  color: #567262;
   cursor: pointer;
-  padding: 0;
+  padding: 5px 8px;
   font:
-    10px Arial,
+    600 10px Arial,
     sans-serif;
+  transition: background .2s, border-color .2s, color .2s;
 }
 .budgetActions button:hover {
+  border-color: #9cbd9b;
+  background: #eaf5e7;
   color: #28553f;
 }
 .budgetActions button:last-child:hover {
   color: #b65f4c;
+  border-color: #e5b7aa;
+  background: #fff3ef;
 }
 @media (max-width: 950px) {
   .sidebar {
@@ -570,18 +588,31 @@
 }
 
 .textButton {
-  border: 0;
-  background: none;
-  color: #4e8d55;
+  border: 1px solid #b9cdb9;
+  border-radius: 7px;
+  background: #f7fbf6;
+  color: #28553f;
   cursor: pointer;
-  font:
-    11px Arial,
-    sans-serif;
-  padding: 4px 0;
+  padding: 9px 12px;
+  font: 700 11px Arial, sans-serif;
+  transition: background .2s, box-shadow .2s, transform .2s;
+}
+.textButton:hover {
+  background: #eaf5e7;
+  box-shadow: 0 5px 12px rgba(40, 85, 63, .1);
+  transform: translateY(-1px);
 }
 .textButton span {
   font-size: 16px;
   margin-left: 5px;
+}
+.authLoading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f5f7f5;
+  color: #567262;
+  font: 13px Arial, sans-serif;
 }
 .modalBackdrop {
   position: fixed;

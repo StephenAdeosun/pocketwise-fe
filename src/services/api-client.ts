@@ -30,6 +30,10 @@ function getToken(): string | null {
   return window.localStorage.getItem(tokenKey);
 }
 
+export function hasAccessToken(): boolean {
+  return getToken() !== null;
+}
+
 export function clearAccessToken(): void {
   if (typeof window !== "undefined") {
     window.localStorage.removeItem(tokenKey);

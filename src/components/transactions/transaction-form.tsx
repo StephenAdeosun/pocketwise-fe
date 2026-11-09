@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { validateTransaction } from "@/lib/validation";
 import type { Category, Transaction, TransactionInput } from "@/types/finance";
-import styles from "@/app/page.module.css";
+import styles from "@/app/dashboard/page.module.css";
 
 interface TransactionFormProps {
   categories: Category[];

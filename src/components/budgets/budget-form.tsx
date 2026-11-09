@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { validateBudget } from "@/lib/validation";
 import type { Budget, BudgetInput, Category } from "@/types/finance";
-import styles from "@/app/page.module.css";
+import styles from "@/app/dashboard/page.module.css";
 
 interface BudgetFormProps {
   categories: Category[];
