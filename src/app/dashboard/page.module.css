@@ -173,8 +173,21 @@
   border-radius: 50%;
   background: #fff;
   color: #516258;
-  font-size: 24px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
+  transition: border-color .2s, color .2s, box-shadow .2s;
+}
+.notification:hover,
+.notification[aria-expanded="true"] {
+  border-color: #9cbd9b;
+  color: #28553f;
+  box-shadow: 0 5px 14px rgba(40, 85, 63, .12);
+}
+.notification svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.8;
 }
 .notificationDot {
   position: absolute;
@@ -185,6 +198,73 @@
   background: #e97860;
   border: 1px solid white;
   border-radius: 50%;
+}
+.notificationBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(23, 60, 50, .08);
+}
+.notificationModal {
+  position: absolute;
+  top: 91px;
+  right: clamp(20px, 5vw, 78px);
+  width: min(390px, calc(100vw - 40px));
+  padding: 22px;
+  border: 1px solid #e1e9e1;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 55px rgba(23, 60, 50, .16);
+  animation: notificationIn .18s ease-out;
+}
+.notificationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 17px;
+}
+.notificationHeader h2 {
+  color: #213b2d;
+  font-size: 22px;
+}
+.notificationList {
+  display: grid;
+  gap: 10px;
+}
+.notificationItem {
+  display: flex;
+  gap: 11px;
+  padding: 12px;
+  border: 1px solid #e8eee8;
+  border-radius: 8px;
+  background: #fbfdfb;
+}
+.notificationItem strong {
+  display: block;
+  color: #28553f;
+  font: 700 12px Arial, sans-serif;
+}
+.notificationItem p,
+.emptyNotifications {
+  margin-top: 5px;
+  color: #718078;
+  font: 11px/1.45 Arial, sans-serif;
+}
+.notificationIcon {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  font: 700 12px Arial, sans-serif;
+}
+.danger .notificationIcon { background: #ffe2da; color: #b65f4c; }
+.warning .notificationIcon { background: #fff0c8; color: #a87920; }
+.info .notificationIcon { background: #e4f0e5; color: #4e8d55; }
+@keyframes notificationIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .summaryGrid {
   display: grid;
@@ -342,6 +422,29 @@
   gap: 7px;
   margin: -7px 0 7px;
 }
+.filterHeading {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+  color: #789080;
+  font: 700 10px Arial, sans-serif;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.clearFilters {
+  border: 0;
+  background: transparent;
+  color: #6a9c5e;
+  cursor: pointer;
+  padding: 3px 0;
+  font: 700 10px Arial, sans-serif;
+}
+.clearFilters:hover {
+  color: #28553f;
+  text-decoration: underline;
+}
 .transactionFilters select,
 .transactionFilters input {
   min-width: 0;
@@ -358,6 +461,28 @@
 .transactionFilters select:focus,
 .transactionFilters input:focus {
   border-color: #6a9c5e;
+  box-shadow: 0 0 0 3px rgba(106, 156, 94, .1);
+}
+.transactionFilters input[type="month"] {
+  color-scheme: light;
+  cursor: pointer;
+}
+.transactionFilters input[type="month"]::-webkit-calendar-picker-indicator {
+  display: block;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  opacity: .7;
+  filter: hue-rotate(70deg);
+}
+.calendarField input {
+  color-scheme: light;
+  cursor: pointer;
+}
+.calendarField input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .7;
+  filter: hue-rotate(70deg);
 }
 .emptyState {
   color: #8b968e;

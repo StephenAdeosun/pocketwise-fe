@@ -52,6 +52,7 @@ function DashboardContent() {
     getCurrentDateDetails();
   const [isTransactionFormOpen, setTransactionFormOpen] = useState(false);
   const [isBudgetFormOpen, setBudgetFormOpen] = useState(false);
+  const [isNotificationOpen, setNotificationOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
@@ -93,6 +94,47 @@ function DashboardContent() {
       : balanceCents < 1000000
         ? styles.lowBalance
         : styles.healthyBalance;
+  const notifications = [
+    ...summary.budget_progress
+      .filter((budget) => budget.status === "exceeded")
+      .map((budget) => ({
+        id: `exceeded-${budget.budget_id}`,
+        title: `${budget.category} budget exceeded`,
+        message: `You have used ${budget.percentage}% of this month's budget.`,
+        tone: "danger" as const,
+      })),
+    ...summary.budget_progress
+      .filter((budget) => budget.status === "approaching")
+      .map((budget) => ({
+        id: `approaching-${budget.budget_id}`,
+        title: `${budget.category} budget is approaching its limit`,
+        message: `You have used ${budget.percentage}% of this month's budget.`,
+        tone: "warning" as const,
+      })),
+    ...(balanceCents <= 0
+      ? [{
+          id: "negative-balance",
+          title: "Your balance needs attention",
+          message: "Your current balance is zero or below. Review your recent spending.",
+          tone: "danger" as const,
+        }]
+      : balanceCents < 1000000
+        ? [{
+            id: "low-balance",
+            title: "Your balance is running low",
+            message: "Consider reviewing your spending before adding new expenses.",
+            tone: "warning" as const,
+          }]
+        : []),
+    ...(summary.budget_progress.length === 0
+      ? [{
+          id: "no-budget",
+          title: "Create a monthly budget",
+          message: "Set a category budget to make your spending easier to track.",
+          tone: "info" as const,
+        }]
+      : []),
+  ];
 
   const filteredTransactions = transactions
     .filter(
@@ -107,6 +149,12 @@ function DashboardContent() {
     .filter((transaction) =>
       transaction.transaction_date.startsWith(monthFilter),
     );
+  const filterCategories =
+    transactionTypeFilter === "all"
+      ? categories
+      : categories.filter(
+          (category) => category.type === transactionTypeFilter,
+        );
 
   async function handleTransactionSubmit(input: TransactionInput) {
     if (editingTransaction) {
@@ -197,9 +245,16 @@ function DashboardContent() {
           </div>
           <button
             className={styles.notification}
+            type="button"
             aria-label="View notifications"
+            aria-expanded={isNotificationOpen}
+            onClick={() => setNotificationOpen((open) => !open)}
           >
-            ♢<span className={styles.notificationDot} />
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" />
+              <path d="M10 21h4" />
+            </svg>
+            {notifications.length > 0 && <span className={styles.notificationDot} />}
           </button>
         </header>
 
@@ -285,14 +340,39 @@ function DashboardContent() {
               className={styles.transactionFilters}
               aria-label="Transaction filters"
             >
+              <div className={styles.filterHeading}>
+                <span>Filter activity</span>
+                <button
+                  className={styles.clearFilters}
+                  type="button"
+                  onClick={() => {
+                    setTransactionTypeFilter("all");
+                    setCategoryFilter(0);
+                    setMonthFilter(selectedMonth);
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
               <select
                 aria-label="Filter by transaction type"
                 value={transactionTypeFilter}
-                onChange={(event) =>
-                  setTransactionTypeFilter(
-                    event.target.value as "all" | TransactionType,
-                  )
-                }
+                onChange={(event) => {
+                  const nextType = event.target.value as
+                    | "all"
+                    | TransactionType;
+                  setTransactionTypeFilter(nextType);
+                  if (
+                    nextType !== "all" &&
+                    !categories.some(
+                      (category) =>
+                        category.id === categoryFilter &&
+                        category.type === nextType,
+                    )
+                  ) {
+                    setCategoryFilter(0);
+                  }
+                }}
               >
                 <option value="all">All types</option>
                 <option value="income">Income</option>
@@ -306,9 +386,10 @@ function DashboardContent() {
                 }
               >
                 <option value={0}>All categories</option>
-                {categories.map((category) => (
+                {filterCategories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {category.name}
+                    {category.name} (
+                    {category.type === "income" ? "Income" : "Expense"})
                   </option>
                 ))}
               </select>
@@ -382,9 +463,9 @@ function DashboardContent() {
                 <p className={styles.eyebrow}>November overview</p>
                 <h2>Budget progress</h2>
               </div>
-              <a className={styles.textLink} href="#all-budgets">
+              <Link className={styles.textLink} href="/budgets">
                 Manage <span>→</span>
-              </a>
+                </Link>
             </div>
             <div className={styles.budgetList}>
               {summary.budget_progress.length === 0 ? (
@@ -510,6 +591,56 @@ function DashboardContent() {
             setDeleteTarget(null);
           }}
         />
+      )}
+      {isNotificationOpen && (
+        <div
+          className={styles.notificationBackdrop}
+          role="presentation"
+          onMouseDown={() => setNotificationOpen(false)}
+        >
+          <section
+            className={styles.notificationModal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="notifications-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className={styles.notificationHeader}>
+              <div>
+                <p className={styles.eyebrow}>Stay on track</p>
+                <h2 id="notifications-title">Notifications</h2>
+              </div>
+              <button
+                className={styles.closeButton}
+                type="button"
+                aria-label="Close notifications"
+                onClick={() => setNotificationOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            {notifications.length === 0 ? (
+              <p className={styles.emptyNotifications}>
+                You are all caught up. Keep making thoughtful money decisions.
+              </p>
+            ) : (
+              <div className={styles.notificationList}>
+                {notifications.map((notification) => (
+                  <article
+                    className={`${styles.notificationItem} ${styles[notification.tone]}`}
+                    key={notification.id}
+                  >
+                    <span className={styles.notificationIcon}>!</span>
+                    <div>
+                      <strong>{notification.title}</strong>
+                      <p>{notification.message}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       )}
     </div>
   );

@@ -15,7 +15,7 @@ interface BudgetFormProps {
 const initialForm: BudgetInput = {
   category_id: 6,
   amount: "",
-  month: "2026-11",
+  month: new Date().toISOString().slice(0, 7),
 };
 
 export function BudgetForm({
@@ -133,7 +133,7 @@ export function BudgetForm({
               />
             </div>
           </label>
-          <label>
+          <label className={styles.calendarField}>
             Month
             <input
               type="month"

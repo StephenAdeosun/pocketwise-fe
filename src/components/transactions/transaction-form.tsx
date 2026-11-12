@@ -17,7 +17,7 @@ const initialForm: TransactionInput = {
   category_id: 6,
   amount: "",
   description: "",
-  transaction_date: "2026-11-07",
+  transaction_date: new Date().toISOString().slice(0, 10),
 };
 
 export function TransactionForm({
@@ -163,15 +163,19 @@ export function TransactionForm({
                 updateField("category_id", Number(event.target.value))
               }
             >
-              {availableCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
+              <optgroup
+                label={form.type === "income" ? "Income sources" : "Expense categories"}
+              >
+                {availableCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </optgroup>
             </select>
           </label>
 
-          <label>
+          <label className={styles.calendarField}>
             Date
             <input
               type="date"

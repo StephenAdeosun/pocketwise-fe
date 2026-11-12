@@ -16,7 +16,7 @@ import type {
 } from "@/types/finance";
 import styles from "../dashboard/page.module.css";
 
-const selectedMonth = "2026-11";
+const selectedMonth = new Date().toISOString().slice(0, 7);
 
 export default function TransactionsPage() {
   const [isFormOpen, setFormOpen] = useState(false);
@@ -47,6 +47,10 @@ export default function TransactionsPage() {
     .filter((transaction) =>
       transaction.transaction_date.startsWith(monthFilter),
     );
+  const filterCategories =
+    typeFilter === "all"
+      ? categories
+      : categories.filter((category) => category.type === typeFilter);
 
   async function handleSubmit(input: TransactionInput) {
     if (editingTransaction) {
@@ -125,12 +129,37 @@ export default function TransactionsPage() {
             className={styles.transactionFilters}
             aria-label="Transaction filters"
           >
+            <div className={styles.filterHeading}>
+              <span>Filter activity</span>
+              <button
+                className={styles.clearFilters}
+                type="button"
+                onClick={() => {
+                  setTypeFilter("all");
+                  setCategoryFilter(0);
+                  setMonthFilter(selectedMonth);
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
             <select
               aria-label="Filter by transaction type"
               value={typeFilter}
-              onChange={(event) =>
-                setTypeFilter(event.target.value as "all" | TransactionType)
-              }
+              onChange={(event) => {
+                const nextType = event.target.value as "all" | TransactionType;
+                setTypeFilter(nextType);
+                if (
+                  nextType !== "all" &&
+                  !categories.some(
+                    (category) =>
+                      category.id === categoryFilter &&
+                      category.type === nextType,
+                  )
+                ) {
+                  setCategoryFilter(0);
+                }
+              }}
             >
               <option value="all">All types</option>
               <option value="income">Income</option>
@@ -144,9 +173,9 @@ export default function TransactionsPage() {
               }
             >
               <option value={0}>All categories</option>
-              {categories.map((category) => (
+              {filterCategories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {category.name} ({category.type === "income" ? "Income" : "Expense"})
                 </option>
               ))}
             </select>

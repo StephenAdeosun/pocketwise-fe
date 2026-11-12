@@ -12,7 +12,7 @@ import { logoutAccount } from "@/services/auth-service";
 import type { Budget, BudgetInput } from "@/types/finance";
 import styles from "../dashboard/page.module.css";
 
-const selectedMonth = "2026-11";
+const selectedMonth = new Date().toISOString().slice(0, 7);
 const budgetColors = ["mint", "blue", "coral"] as const;
 
 export default function BudgetsPage() {
