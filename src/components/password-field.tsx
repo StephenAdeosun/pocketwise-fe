@@ -44,7 +44,29 @@ export function PasswordField({
           aria-label={isVisible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
           aria-pressed={isVisible}
         >
-          {isVisible ? "◉" : "◌"}
+          <svg
+            aria-hidden="true"
+            className={styles.passwordIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {isVisible ? (
+              <>
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </>
+            ) : (
+              <>
+                <path d="M3 3l18 18" />
+                <path d="M10.6 6.2A10.7 10.7 0 0 1 12 6c6 0 9.5 6 9.5 6a17.5 17.5 0 0 1-3.2 3.8" />
+                <path d="M6.5 7.1C3.9 8.5 2.5 12 2.5 12s3.5 6 9.5 6c.8 0 1.6-.1 2.3-.3" />
+              </>
+            )}
+          </svg>
         </button>
       </span>
     </label>

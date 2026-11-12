@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -85,6 +86,13 @@ function DashboardContent() {
       0,
     ),
   );
+  const balanceCents = amountToCents(summary.total_balance);
+  const balanceTone =
+    balanceCents <= 0
+      ? styles.negativeBalance
+      : balanceCents < 1000000
+        ? styles.lowBalance
+        : styles.healthyBalance;
 
   const filteredTransactions = transactions
     .filter(
@@ -103,8 +111,10 @@ function DashboardContent() {
   async function handleTransactionSubmit(input: TransactionInput) {
     if (editingTransaction) {
       await updateTransaction(editingTransaction.id, input);
+      toast.success("Transaction updated.");
     } else {
       await addTransaction(input);
+      toast.success(input.type === "income" ? "Income added." : "Expense added.");
     }
     setEditingTransaction(null);
     setTransactionFormOpen(false);
@@ -122,8 +132,10 @@ function DashboardContent() {
   async function handleBudgetSubmit(input: BudgetInput) {
     if (editingBudget) {
       await updateBudget(editingBudget.id, input);
+      toast.success("Budget updated.");
     } else {
       await addBudget(input);
+      toast.success("Budget created.");
     }
     setEditingBudget(null);
     setBudgetFormOpen(false);
@@ -192,7 +204,9 @@ function DashboardContent() {
         </header>
 
         <section className={styles.summaryGrid} aria-label="Financial summary">
-          <article className={`${styles.summaryCard} ${styles.balanceCard}`}>
+          <article
+            className={`${styles.summaryCard} ${styles.balanceCard} ${balanceTone}`}
+          >
             <div className={styles.cardLabel}>
               Total balance <span>i</span>
             </div>
@@ -485,11 +499,13 @@ function DashboardContent() {
               : "Are you sure you want to delete this budget? This action cannot be undone."
           }
           onClose={() => setDeleteTarget(null)}
-          onConfirm={() => {
+          onConfirm={async () => {
             if (deleteTarget.type === "transaction") {
-              deleteTransaction(deleteTarget.item.id);
+              await deleteTransaction(deleteTarget.item.id);
+              toast.success("Transaction deleted.");
             } else {
-              deleteBudget(deleteTarget.item.id);
+              await deleteBudget(deleteTarget.item.id);
+              toast.success("Budget deleted.");
             }
             setDeleteTarget(null);
           }}
@@ -517,7 +533,11 @@ export default function DashboardPage() {
   }, [router]);
 
   if (checkingAuth) {
-    return <main className={styles.authLoading}>Loading your dashboard...</main>;
+    return (
+      <main className={styles.authLoading} aria-label="Loading dashboard">
+        <span className={styles.spinner} />
+      </main>
+    );
   }
 
   return <DashboardContent />;

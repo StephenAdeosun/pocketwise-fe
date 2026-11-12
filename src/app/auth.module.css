@@ -98,6 +98,11 @@
 .passwordToggle:hover {
   color: #28553f;
 }
+.passwordIcon {
+  display: block;
+  width: 19px;
+  height: 19px;
+}
 .passwordHint {
   margin-top: -8px;
   color: #7a897f;

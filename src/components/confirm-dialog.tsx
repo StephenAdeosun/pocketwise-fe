@@ -3,7 +3,7 @@ import styles from "@/app/dashboard/page.module.css";
 interface ConfirmDialogProps {
   title: string;
   message: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   onClose: () => void;
 }
 

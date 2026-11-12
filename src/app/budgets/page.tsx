@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFinanceStore } from "@/hooks/use-finance-store";
@@ -29,8 +30,13 @@ export default function BudgetsPage() {
   } = useFinanceStore(selectedMonth);
 
   async function handleSubmit(input: BudgetInput) {
-    if (editingBudget) await updateBudget(editingBudget.id, input);
-    else await addBudget(input);
+    if (editingBudget) {
+      await updateBudget(editingBudget.id, input);
+      toast.success("Budget updated.");
+    } else {
+      await addBudget(input);
+      toast.success("Budget created.");
+    }
     setEditingBudget(null);
     setFormOpen(false);
   }
@@ -180,8 +186,9 @@ export default function BudgetsPage() {
           title="Delete budget?"
           message="Are you sure you want to delete this budget? This action cannot be undone."
           onClose={() => setBudgetToDelete(null)}
-          onConfirm={() => {
-            deleteBudget(budgetToDelete.id);
+          onConfirm={async () => {
+            await deleteBudget(budgetToDelete.id);
+            toast.success("Budget deleted.");
             setBudgetToDelete(null);
           }}
         />

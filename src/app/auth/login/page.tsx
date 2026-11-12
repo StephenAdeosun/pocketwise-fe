@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { loginAccount } from "@/services/auth-service";
 import { PasswordField } from "@/components/password-field";
 import styles from "../../auth.module.css";
@@ -11,15 +12,15 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
       await loginAccount(email, password);
+      toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to log in.");
+      toast.error(reason instanceof Error ? reason.message : "Unable to log in.");
     }
   }
 
@@ -35,17 +36,15 @@ export default function LoginPage() {
           Sign in to keep your student budget on track.
         </p>
         <form className={styles.authForm} onSubmit={handleSubmit}>
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
-          )}
           <label>
             Email address
             <input
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                toast.dismiss();
+                setEmail(event.target.value);
+              }}
               required
             />
           </label>
@@ -53,7 +52,10 @@ export default function LoginPage() {
             id="login-password"
             label="Password"
             value={password}
-            onChange={setPassword}
+            onChange={(value) => {
+              toast.dismiss();
+              setPassword(value);
+            }}
             autoComplete="current-password"
           />
           <button className={styles.submitButton} type="submit">

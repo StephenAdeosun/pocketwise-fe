@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { registerAccount } from "@/services/auth-service";
 import { PasswordField } from "@/components/password-field";
 import { validatePassword } from "@/lib/validation";
@@ -16,21 +17,19 @@ export default function RegisterPage() {
     password: "",
     confirmation: "",
   });
-  const [error, setError] = useState("");
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (form.full_name.trim().split(/\s+/).length < 2) {
-      setError("Enter your first and last name.");
+      toast.error("Enter your first and last name.");
       return;
     }
     const passwordErrors = validatePassword(form.password);
     if (passwordErrors.length > 0) {
-      setError(passwordErrors.join(" "));
+      toast.error(passwordErrors.join(" "));
       return;
     }
     if (form.password !== form.confirmation) {
-      setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -41,9 +40,10 @@ export default function RegisterPage() {
         form.password,
         form.confirmation,
       );
+      toast.success("Account created. You can now log in.");
       router.push("/login");
     } catch (reason) {
-      setError(
+      toast.error(
         reason instanceof Error ? reason.message : "Unable to create account.",
       );
     }
@@ -61,19 +61,15 @@ export default function RegisterPage() {
           Start building a clearer picture of your money.
         </p>
         <form className={styles.authForm} onSubmit={handleSubmit}>
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
-          )}
           <label>
             Full name
             <input
               type="text"
               value={form.full_name}
-              onChange={(event) =>
+              onChange={(event) => {
+                toast.dismiss();
                 setForm({ ...form, full_name: event.target.value })
-              }
+              }}
               required
             />
           </label>
@@ -82,9 +78,10 @@ export default function RegisterPage() {
             <input
               type="email"
               value={form.email}
-              onChange={(event) =>
+              onChange={(event) => {
+                toast.dismiss();
                 setForm({ ...form, email: event.target.value })
-              }
+              }}
               required
             />
           </label>
@@ -92,20 +89,25 @@ export default function RegisterPage() {
             id="signup-password"
             label="Password"
             value={form.password}
-            onChange={(password) => setForm({ ...form, password })}
-            minLength={8}
+            onChange={(password) => {
+              toast.dismiss();
+              setForm({ ...form, password });
+            }}
+            minLength={6}
             autoComplete="new-password"
           />
           <p className={styles.passwordHint}>
-            Use 8+ characters with uppercase, lowercase, a number, and a
-            special character.
+            Use at least 6 characters.
           </p>
           <PasswordField
             id="signup-confirmation"
             label="Confirm password"
             value={form.confirmation}
-            onChange={(confirmation) => setForm({ ...form, confirmation })}
-            minLength={8}
+            onChange={(confirmation) => {
+              toast.dismiss();
+              setForm({ ...form, confirmation });
+            }}
+            minLength={6}
             autoComplete="new-password"
           />
           <button className={styles.submitButton} type="submit">

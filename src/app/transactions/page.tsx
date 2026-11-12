@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useFinanceStore } from "@/hooks/use-finance-store";
@@ -48,8 +49,13 @@ export default function TransactionsPage() {
     );
 
   async function handleSubmit(input: TransactionInput) {
-    if (editingTransaction) await updateTransaction(editingTransaction.id, input);
-    else await addTransaction(input);
+    if (editingTransaction) {
+      await updateTransaction(editingTransaction.id, input);
+      toast.success("Transaction updated.");
+    } else {
+      await addTransaction(input);
+      toast.success(input.type === "income" ? "Income added." : "Expense added.");
+    }
     setEditingTransaction(null);
     setFormOpen(false);
   }
@@ -225,8 +231,9 @@ export default function TransactionsPage() {
           title="Delete transaction?"
           message={`Are you sure you want to delete "${transactionToDelete.description}"? This action cannot be undone.`}
           onClose={() => setTransactionToDelete(null)}
-          onConfirm={() => {
-            deleteTransaction(transactionToDelete.id);
+          onConfirm={async () => {
+            await deleteTransaction(transactionToDelete.id);
+            toast.success("Transaction deleted.");
             setTransactionToDelete(null);
           }}
         />
