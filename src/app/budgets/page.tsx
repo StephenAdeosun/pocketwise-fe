@@ -76,7 +76,7 @@ export default function BudgetsPage() {
             <strong>Small steps add up.</strong>
             <p>Keeping track today makes tomorrow easier.</p>
           </div>
-          <Link className={styles.logout} href="/login" onClick={logoutAccount}>
+          <Link className={styles.logout} href="/auth/login" onClick={logoutAccount}>
             ↪ <span>Log out</span>
           </Link>
         </div>

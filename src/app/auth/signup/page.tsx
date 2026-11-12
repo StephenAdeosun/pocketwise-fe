@@ -41,7 +41,7 @@ export default function RegisterPage() {
         form.confirmation,
       );
       toast.success("Account created. You can now log in.");
-      router.push("/login");
+      router.push("/auth/login");
     } catch (reason) {
       toast.error(
         reason instanceof Error ? reason.message : "Unable to create account.",

@@ -178,7 +178,7 @@ function DashboardContent() {
           </div>
           <a
             className={styles.logout}
-            href="/login"
+            href="/auth/login"
             onClick={() => logoutAccount()}
           >
             ↪ <span>Log out</span>
